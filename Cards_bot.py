@@ -32,8 +32,49 @@ def x (message) :
                                избавится от всех своих карт.''')
         bot.register_next_step_handler (message, x)
     else :
-        bot.register_next_step_handler (message, Nisk_id)
+        Nisk_id (message)
 
 def Nisk_id (message) :
     with open ("Nisks.json", "r") as f :
         nisks = json.load (f)
+    if message.text in nisks :
+        with open (message.from_user.id + "txt", "w") as f :
+            f.write (message.text)
+        start_game (message)
+    else :
+        msg = bot.send_message(message.from_user.id, "Такого ника не существует!")
+        bot.register_next_step_handler (message, x)
+
+def start_game (message) :
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton("Да! ✅")
+    btn2 = ypes.KeyboardButton("Нет! ❌")
+    markup.add (btn1, btn2, row_width=1)
+    with open (message.from_user.id + "txt", "r") as f :
+        nisk_player2 = f.read ()
+    with open ("Nisks.json", "r") :
+        nisks = json.load (f)
+    msg = bot.send_message(nisk_player2, "Игрок {} хочет с вами сыграть. А вы хотите?".format (nisks [message.from_user.id]), reply_markup= markup)
+
+    def check_internet_connection():
+    import socket
+    try:
+        socket.create_connection(("api.telegram.org", 443), timeout=5)
+        print("Соединение с Telegram API установлено")
+        return True
+    except OSError:
+        print("Нет соединения с интернетом или Telegram API")
+        return False
+
+if __name__ == "__main__":
+    while True:
+        if check_internet_connection():
+            try:
+                print("Бот запущен и работает...")
+                bot.polling(none_stop=True, interval=2, timeout=60)
+            except Exception as e:
+                print(f"Ошибка: {e}, перезапуск через 3 секунды")
+                time.sleep(3)
+        else:
+            print("Нет интернет-соединения, проверка через 3 секунды")
+            time.sleep(3)
