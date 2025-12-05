@@ -21,8 +21,19 @@ def show_nisk (message) :
         
     nisks [user_nick] = message.from_user.id
     with open ("Nisks.json", "w") as f :
-        json.dump (nisks, f)
+        json.dump (nisks, f, indent=4, ensure_ascii=False)
     msg = bot.send_message(message.from_user.id, "Ваш ник: {}.".format (user_nick))
-    bot.register_next_step_handler (message, )
+    bot.register_next_step_handler (message, x)
 
-  
+def x (message) :
+    if message.text == "/rules" :
+        msg = bot.send_message(message.from_user.id, '''Правила игры:\nВы с другим игроком кладёте карты по очереди.\nЕсли атака вашей карты превышает защиту карты
+                               внизу, то вы можете положить её сверху, если таких карт у вас нет, возьмите карту и пропустите ход.\nВыигрывает тот кто первым
+                               избавится от всех своих карт.''')
+        bot.register_next_step_handler (message, x)
+    else :
+        bot.register_next_step_handler (message, Nisk_id)
+
+def Nisk_id (message) :
+    with open ("Nisks.json", "r") as f :
+        nisks = json.load (f)
