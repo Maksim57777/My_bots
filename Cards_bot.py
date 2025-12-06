@@ -4,7 +4,7 @@ import random
 import json
 import time
 nisk_simvols = ["1","2","3","4","5","6","7","8","9","0", "A", "B", "C", "D"]
-bot = telebot.TeleBot ('8592594669:AAHybCJ4QxI2VB1r8dA32TwwXf-1L7hSXP4')
+bot = telebot.TeleBot ('8514122137:AAGnjK6LTQjasvOL9esPTU_EL1OXCVnW-B8')
 @bot.message_handler(commands=['start'])
 def start (message) :
     msg = bot.send_message(message.from_user.id, '''Привет, я бот для карточной игры "Цифры"\n
@@ -41,6 +41,8 @@ def Nisk_id (message) :
     if message.text in nisks :
         with open (message.from_user.id + "txt", "w") as f :
             f.write (message.text)
+        with open (message.text + "txt") as f :
+            f.write (message.from_user.id)
         start_game (message)
     else :
         msg = bot.send_message(message.from_user.id, "Такого ника не существует!")
@@ -52,10 +54,21 @@ def start_game (message) :
     btn2 = types.KeyboardButton("Нет! ❌")
     markup.add (btn1, btn2, row_width=1)
     with open (message.from_user.id + "txt", "r") as f :
-        nisk_player2 = f.read ()
+        id_player2 = f.read ()
     with open ("Nisks.json", "r") :
         nisks = json.load (f)
-    msg = bot.send_message(nisk_player2, "Игрок {} хочет с вами сыграть. А вы хотите?".format (nisks [message.from_user.id]), reply_markup= markup)
+    msg = bot.send_message(id_player2, "Игрок {} хочет с вами сыграть. А вы хотите?".format (nisks [message.from_user.id]), reply_markup= markup)
+    bot.register_next_step_handler (msg, message, x2)
+
+def x2 (msg, message) :
+    if msg.text == "Да! ✅" :
+        with open (msg.from_user.id + "txt", "r") as f :
+            id_player1 = f.read ()
+        msg = bot.send_message(id_player1, "Игрок согласен")
+
+    elif msg.text == "Нет! ❌" :
+        msg = bot.send_message(id_player1, "Предложение отклонено!")
+        bot.register_next_step_handler (message, x)
 
 def check_internet_connection():
     import socket
@@ -85,20 +98,6 @@ if __name__ == "__main__":
             except Exception as e:
                 print(f"Ошибка: {e}, перезапуск через 3 секунды")
                 time.sleep(3)
-        else:
+        else :
             print("Нет интернет-соединения, проверка через 3 секунды")
-            time.sleep(3)
-
-
-if __name__ == "__main__":
-    while True:
-        if check_internet_connection():
-            try:
-                print("Бот запущен и работает...")
-                bot.polling(none_stop=True, interval=2, timeout=60)
-            except Exception as e:
-                print(f"Ошибка: {e}, перезапуск через 3 секунды")
-                time.sleep(3)
-        else:
-            print("Нет интернет-соединения, проверка через 3 секунды")
-            time.sleep(3)
+            time.sleep (3)
