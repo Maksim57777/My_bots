@@ -8,7 +8,7 @@ bot = telebot.TeleBot ('8514122137:AAGnjK6LTQjasvOL9esPTU_EL1OXCVnW-B8')
 @bot.message_handler(commands=['start'])
 def start (message) :
     msg = bot.send_message(message.from_user.id, '''Привет, я бот для карточной игры "Цифры"\n
-Введите "/rules" чтобы узнать правила игры\n
+Введите "rules" чтобы узнать правила игры\n
 Введите ник игрока для игры с ним''')
     show_nisk (message)
 
@@ -27,7 +27,7 @@ def show_nisk (message) :
     bot.register_next_step_handler (message, x)
 
 def x (message) :
-    if message.text == "/rules" :
+    if message.text == "rules" :
         msg = bot.send_message(message.from_user.id, '''Правила игры:\nВы с другим игроком кладёте карты по очереди.\nЕсли атака вашей карты превышает защиту карты
                                внизу, то вы можете положить её сверху, если таких карт у вас нет, возьмите карту и пропустите ход.\nВыигрывает тот кто первым
                                избавится от всех своих карт.''')
