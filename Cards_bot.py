@@ -65,10 +65,17 @@ def x2 (msg, message) :
         with open (msg.from_user.id + "txt", "r") as f :
             id_player1 = f.read ()
         msg = bot.send_message(id_player1, "Игрок согласен")
-
+        game_start (message, msg)
     elif msg.text == "Нет! ❌" :
         msg = bot.send_message(id_player1, "Предложение отклонено!")
         bot.register_next_step_handler (message, x)
+
+def game_start (message, msg) :
+    player1_cards = []
+    for i in range (5) :
+        player1_cards [i] = [random.randint (0,20), random.randint (0,20)]
+    with open (message.from_user.id + "json", "w") as f :
+        json.dump (player1_cards, f, indent=4, ensure_ascii=False)
 
 def check_internet_connection():
     import socket
